@@ -34,6 +34,8 @@ public class NBTHashVariables {
         "#luckyBootsEnchantments",
         "#luckyBowEnchantments",
         "#luckyFishingRodEnchantments",
+        "#luckyTridentEnchantments",
+        "#luckyCrossbowEnchantments",
         "#randEnchantment",
         "#luckyPotionEffects",
         "#unluckyPotionEffects",
@@ -72,6 +74,15 @@ public class NBTHashVariables {
     private static final CompoundNBT luckOfTheSea = getEnchantment(Enchantments.LUCK_OF_THE_SEA, 3);
     private static final CompoundNBT lure = getEnchantment(Enchantments.LURE, 3);
 
+    private static final CompoundNBT loyalty = getEnchantment(Enchantments.LOYALTY, 3);
+    private static final CompoundNBT channeling = getEnchantment(Enchantments.CHANNELING, 1);
+    private static final CompoundNBT riptide = getEnchantment(Enchantments.RIPTIDE, 3);
+    private static final CompoundNBT impaling = getEnchantment(Enchantments.IMPALING, 5);
+
+    private static final CompoundNBT quickCharge = getEnchantment(Enchantments.QUICKCHARGE, 3);
+    private static final CompoundNBT multishot = getEnchantment(Enchantments.MULTISHOT, 1);
+    private static final CompoundNBT piercing = getEnchantment(Enchantments.PIERCING, 4);
+
     private static final CompoundNBT speed = getEffectInstance(Effects.SPEED, 3, 9600);
     private static final CompoundNBT slowness = getEffectInstance(Effects.SLOWNESS, 3, 9600);
     private static final CompoundNBT haste = getEffectInstance(Effects.HASTE, 3, 9600);
@@ -98,8 +109,8 @@ public class NBTHashVariables {
 
     private static Random random = new Random();
 
-    private static CompoundNBT getEnchantment(Enchantment enchantment, int maxLevel) {
-        CompoundNBT nbttag = new CompoundNBT();
+    private static CompoundNBT getEnchantment(final Enchantment enchantment, final int maxLevel) {
+        final CompoundNBT nbttag = new CompoundNBT();
 
         nbttag.putString("id", ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString());
         nbttag.putShort("lvl", (short) maxLevel);
@@ -107,24 +118,24 @@ public class NBTHashVariables {
         return nbttag;
     }
 
-    private static CompoundNBT getEffectInstance(Effect potion, int amplifier, int duration) {
-        CompoundNBT nbttag = new CompoundNBT();
-        EffectInstance effect = new EffectInstance(potion, duration, amplifier);
+    private static CompoundNBT getEffectInstance(final Effect potion, final int amplifier, final int duration) {
+        final CompoundNBT nbttag = new CompoundNBT();
+        final EffectInstance effect = new EffectInstance(potion, duration, amplifier);
         return effect.write(nbttag);
     }
 
     private static ArrayList<CompoundNBT> getRandomList(
-        int minAmount, int maxAmount, CompoundNBT... elements) {
-        int amountToRemove =
+        final int minAmount, final int maxAmount, final CompoundNBT... elements) {
+        final int amountToRemove =
             elements.length - (random.nextInt((maxAmount + 1) - minAmount) + minAmount);
 
-        ArrayList<CompoundNBT> chosenElementList = new ArrayList<CompoundNBT>(elements.length);
-        for (CompoundNBT element : elements) {
+        final ArrayList<CompoundNBT> chosenElementList = new ArrayList<CompoundNBT>(elements.length);
+        for (final CompoundNBT element : elements) {
             chosenElementList.add(element.copy());
         }
 
         for (int a = 0; a < amountToRemove; a++) {
-            int index = random.nextInt(chosenElementList.size());
+            final int index = random.nextInt(chosenElementList.size());
             chosenElementList.remove(index);
         }
 
@@ -132,12 +143,12 @@ public class NBTHashVariables {
     }
 
     private static ListNBT getRandomEnchantmentList(
-        int minAmount, int maxAmount, CompoundNBT... enchantments) {
-        ArrayList<CompoundNBT> chosenEnchantments =
+        final int minAmount, final int maxAmount, final CompoundNBT... enchantments) {
+        final ArrayList<CompoundNBT> chosenEnchantments =
             getRandomList(minAmount, maxAmount, enchantments);
 
-        ListNBT nbttaglist = new ListNBT();
-        for (CompoundNBT enchantment : chosenEnchantments) {
+        final ListNBT nbttaglist = new ListNBT();
+        for (final CompoundNBT enchantment : chosenEnchantments) {
             enchantment.putShort("lvl", (short) (random.nextInt(enchantment.getShort("lvl")) + 1));
             nbttaglist.add(enchantment);
         }
@@ -146,15 +157,15 @@ public class NBTHashVariables {
     }
 
     private static ListNBT getRandomEffectInstanceList(
-        int minAmount, int maxAmount, CompoundNBT... potionEffects) {
-        ArrayList<CompoundNBT> chosenEffectInstances =
+        final int minAmount, final int maxAmount, final CompoundNBT... potionEffects) {
+        final ArrayList<CompoundNBT> chosenEffectInstances =
             getRandomList(minAmount, maxAmount, potionEffects);
 
-        ListNBT nbttaglist = new ListNBT();
-        for (CompoundNBT potionEffect : chosenEffectInstances) {
+        final ListNBT nbttaglist = new ListNBT();
+        for (final CompoundNBT potionEffect : chosenEffectInstances) {
             potionEffect.putByte(
                 "Amplifier", (byte) (random.nextInt(potionEffect.getByte("Amplifier") + 1)));
-            int minDuration = (int) (potionEffect.getInt("Duration") / 3F);
+            final int minDuration = (int) (potionEffect.getInt("Duration") / 3F);
             potionEffect.putInt(
                 "Duration",
                 random.nextInt((potionEffect.getInt("Duration") + 1) - minDuration) + minDuration);
@@ -164,7 +175,7 @@ public class NBTHashVariables {
         return nbttaglist;
     }
 
-    public static INBT getNBTTagFromString(String name, DropProcessData processData) {
+    public static INBT getNBTTagFromString(String name, final DropProcessData processData) {
         if (name.equals("#luckySwordEnchantments"))
             return getRandomEnchantmentList(4, 6,
                 sharpness, smite, baneOfArthroponds, knockBack, fireAspect, looting, unbreaking);
@@ -213,9 +224,14 @@ public class NBTHashVariables {
             return getRandomEnchantmentList(3, 5, unbreaking, power, punch, flame, infinity);
         if (name.equals("#luckyFishingRodEnchantments"))
             return getRandomEnchantmentList(2, 3, unbreaking, luckOfTheSea, lure);
+        if (name.equals("#luckyTridentEnchantments"))
+            return getRandomEnchantmentList(3, 5, loyalty, channeling, riptide, impaling, unbreaking);
+        if (name.equals("#luckyCrossbowEnchantments"))
+            return getRandomEnchantmentList(2, 4, quickCharge, multishot, piercing, unbreaking);
+
 
         if (name.equals("#randEnchantment"))
-            return getRandomEnchantmentList(1, 1,
+            return getRandomEnchantmentList(1, 1
                 protection,
                 fireProtection,
                 featherFalling,
@@ -237,7 +253,14 @@ public class NBTHashVariables {
                 flame,
                 infinity,
                 luckOfTheSea,
-                lure);
+                lure,
+                loyalty,
+                channeling,
+                riptide,
+                impaling,
+                quickCharge,
+                multishot,
+                piercing);
 
         if (name.equals("#luckyPotionEffects"))
             return getRandomEffectInstanceList(7, 10,
@@ -275,59 +298,59 @@ public class NBTHashVariables {
                 float launchPower = 0.9F;
                 int launchAngle = 15;
                 if (name.startsWith("#randLaunchMotion(")) {
-                    String contents = name.substring(name.indexOf('(') + 1, name.lastIndexOf(')'));
-                    String[] splitValue = DropStringUtils.splitBracketString(contents, ',');
+                    final String contents = name.substring(name.indexOf('(') + 1, name.lastIndexOf(')'));
+                    final String[] splitValue = DropStringUtils.splitBracketString(contents, ',');
                     splitValue[0] = DropStringUtils.removeNumSuffix(splitValue[0]);
                     launchPower = ValueParser.getFloat(splitValue[0], processData);
                     launchAngle = ValueParser.getInteger(splitValue[1], processData);
                 }
 
-                float launchYaw = MathHelper.wrapDegrees(random.nextFloat() * 360.0F);
-                float launchPitch = -90.0F + (random.nextInt(launchAngle * 2) - launchAngle);
-                float launchMotionX =
+                final float launchYaw = MathHelper.wrapDegrees(random.nextFloat() * 360.0F);
+                final float launchPitch = -90.0F + (random.nextInt(launchAngle * 2) - launchAngle);
+                final float launchMotionX =
                     -MathHelper.sin(launchYaw / 180.0F * (float) Math.PI)
                         * MathHelper.cos(launchPitch / 180.0F * (float) Math.PI)
                         * launchPower;
-                float launchMotionZ =
+                final float launchMotionZ =
                     MathHelper.cos(launchYaw / 180.0F * (float) Math.PI)
                         * MathHelper.cos(launchPitch / 180.0F * (float) Math.PI)
                         * launchPower;
-                float launchMotionY = -MathHelper.sin(launchPitch / 180.0F * (float) Math.PI) * launchPower;
+                final float launchMotionY = -MathHelper.sin(launchPitch / 180.0F * (float) Math.PI) * launchPower;
 
-                ListNBT motionList = new ListNBT();
+                final ListNBT motionList = new ListNBT();
                 motionList.add(DoubleNBT.valueOf(launchMotionX));
                 motionList.add(DoubleNBT.valueOf(launchMotionY));
                 motionList.add(DoubleNBT.valueOf(launchMotionZ));
                 return motionList;
-            } catch (Exception e) {
+            } catch (final Exception e) {
             }
         }
 
         if (name.startsWith("#motionFromDirection(")) {
             try {
-                String contents = name.substring(name.indexOf('(') + 1, name.lastIndexOf(')'));
-                String[] splitValue = DropStringUtils.splitBracketString(contents, ',');
+                final String contents = name.substring(name.indexOf('(') + 1, name.lastIndexOf(')'));
+                final String[] splitValue = DropStringUtils.splitBracketString(contents, ',');
                 splitValue[2] = DropStringUtils.removeNumSuffix(splitValue[2]);
 
-                int launchYaw = ValueParser.getInteger(splitValue[0], processData);
-                int launchPitch = ValueParser.getInteger(splitValue[1], processData);
-                float launchPower = ValueParser.getFloat(splitValue[2], processData);
-                float launchMotionX =
+                final int launchYaw = ValueParser.getInteger(splitValue[0], processData);
+                final int launchPitch = ValueParser.getInteger(splitValue[1], processData);
+                final float launchPower = ValueParser.getFloat(splitValue[2], processData);
+                final float launchMotionX =
                     -MathHelper.sin(launchYaw / 180.0F * (float) Math.PI)
                         * MathHelper.cos(launchPitch / 180.0F * (float) Math.PI)
                         * launchPower;
-                float launchMotionZ =
+                final float launchMotionZ =
                     MathHelper.cos(launchYaw / 180.0F * (float) Math.PI)
                         * MathHelper.cos(launchPitch / 180.0F * (float) Math.PI)
                         * launchPower;
-                float launchMotionY = -MathHelper.sin(launchPitch / 180.0F * (float) Math.PI) * launchPower;
+                final float launchMotionY = -MathHelper.sin(launchPitch / 180.0F * (float) Math.PI) * launchPower;
 
-                ListNBT motionList = new ListNBT();
+                final ListNBT motionList = new ListNBT();
                 motionList.add(DoubleNBT.valueOf(launchMotionX));
                 motionList.add(DoubleNBT.valueOf(launchMotionY));
                 motionList.add(DoubleNBT.valueOf(launchMotionZ));
                 return motionList;
-            } catch (Exception e) {
+            } catch (final Exception e) {
             }
         }
 
@@ -336,18 +359,18 @@ public class NBTHashVariables {
                 float bowPowerMod = 1.0F;
                 float randAngle = 0;
                 if (name.startsWith("#bowMotion(")) {
-                    String contents = name.substring(name.indexOf('(') + 1, name.lastIndexOf(')'));
-                    String[] splitValue = DropStringUtils.splitBracketString(contents, ',');
+                    final String contents = name.substring(name.indexOf('(') + 1, name.lastIndexOf(')'));
+                    final String[] splitValue = DropStringUtils.splitBracketString(contents, ',');
                     splitValue[0] = DropStringUtils.removeNumSuffix(splitValue[0]);
                     if (splitValue.length > 1) splitValue[1] = DropStringUtils.removeNumSuffix(splitValue[1]);
                     bowPowerMod = ValueParser.getFloat(splitValue[0], processData);
                     if (splitValue.length > 1) randAngle = ValueParser.getFloat(splitValue[1], processData);
                 }
 
-                Entity player = processData.getPlayer();
-                Vector3d playerPos = player.getPositionVec();
+                final Entity player = processData.getPlayer();
+                final Vector3d playerPos = player.getPositionVec();
 
-                ArrowEntity arrowEntity = processData.getPlayer() instanceof LivingEntity
+                final ArrowEntity arrowEntity = processData.getPlayer() instanceof LivingEntity
                     ? new ArrowEntity(processData.getWorld(), (LivingEntity) player)
                     : new ArrowEntity(processData.getWorld(), playerPos.x, playerPos.y, playerPos.z);
 
@@ -363,13 +386,13 @@ public class NBTHashVariables {
                     processData.getBowPower() * 3.0F * bowPowerMod,
                     1.0F);
 
-                ListNBT motionList = new ListNBT();
-                Vector3d arrowMotion = arrowEntity.getMotion();
+                final ListNBT motionList = new ListNBT();
+                final Vector3d arrowMotion = arrowEntity.getMotion();
                 motionList.add(DoubleNBT.valueOf(arrowMotion.x));
                 motionList.add(DoubleNBT.valueOf(arrowMotion.y));
                 motionList.add(DoubleNBT.valueOf(arrowMotion.z));
                 return motionList;
-            } catch (Exception e) {}
+            } catch (final Exception e) {}
         }
 
         name =
@@ -386,15 +409,15 @@ public class NBTHashVariables {
                 "#chestLootTable(" + LootTables.CHESTS_SIMPLE_DUNGEON.getPath() + ")");
 
         if (name.startsWith("#chestLootTable(")) {
-            ChestTileEntity tileEntityChest = new ChestTileEntity();
-            String lootId =
+            final ChestTileEntity tileEntityChest = new ChestTileEntity();
+            final String lootId =
                 ValueParser.getString(name.substring(name.indexOf('(') + 1, name.lastIndexOf(')')));
             tileEntityChest.setLootTable(new ResourceLocation("minecraft", lootId), random.nextLong());
             if (processData.getWorld() != null)
                 tileEntityChest.setWorldAndPos(processData.getWorld(), processData.getHarvestBlockPos());
             tileEntityChest.fillWithLoot(null);
 
-            CompoundNBT tagCompound = new CompoundNBT();
+            final CompoundNBT tagCompound = new CompoundNBT();
             tileEntityChest.write(tagCompound);
             return tagCompound.getList("Items", Constants.NBT.TAG_COMPOUND);
         }
